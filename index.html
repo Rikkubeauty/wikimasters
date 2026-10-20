@@ -162,7 +162,19 @@ td.iata { font: 500 13px var(--f-mono); color: var(--ink-2); }
 td.ck { width: 64px; text-align: center; }
 .tag { font: 600 11px var(--f-display); letter-spacing: .08em; text-transform: uppercase; padding: 2px 7px; border-radius: 4px; background: var(--track); color: var(--ink-2); white-space: nowrap; }
 .tag.mil { background: var(--mil-soft); color: var(--mil); }
-.tag.new { background: var(--chart-soft); color: var(--chart); margin-left: 6px; }
+.act { width: 1%; white-space: nowrap; text-align: right; }
+.ico { border: 0; background: none; color: var(--ink-2); border-radius: 6px; width: 32px; height: 32px; cursor: pointer; font-size: 16px; line-height: 1; }
+.ico:hover { background: var(--track); color: var(--chart); }
+tr.edit { background: var(--chart-soft); }
+tr.edit td { vertical-align: top; }
+tr.edit .field { background: var(--panel); padding: 6px 8px; min-width: 0; }
+tr.edit .f-code, tr.edit .f-iata { font-family: var(--f-mono); text-transform: uppercase; }
+tr.edit .f-code { width: 9ch; } tr.edit .f-iata { width: 6ch; } tr.edit .f-name { min-width: 14ch; }
+.edit-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; align-items: center; padding-top: 2px; }
+.edit-actions .btn { padding: 5px 11px; font-size: 14px; }
+.edit-actions .danger { border-color: var(--chart); color: var(--chart); }
+.edit-msg { flex-basis: 100%; text-align: right; font-size: 13px; color: var(--chart); font-weight: 600; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* case à cocher */
 .cb { appearance: none; width: 22px; height: 22px; border: 2px solid var(--ink-2); border-radius: 5px; cursor: pointer; display: inline-grid; place-content: center; background: var(--panel); margin: 0; }
@@ -178,7 +190,7 @@ td.ck { width: 64px; text-align: center; }
 .addform { padding: 16px 20px 20px; border-bottom: 1px solid var(--line); background: var(--chart-soft); display: grid; gap: 14px; }
 .addform h3 { font-size: 20px; }
 .grid-f { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
-.grid-f label { display: grid; gap: 4px; font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.grid-f label { display: grid; gap: 4px; align-content: start; font-size: 13px; font-weight: 600; color: var(--ink-2); }
 .grid-f .field { background: var(--panel); }
 .grid-f .wide { grid-column: 1 / -1; }
 .form-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
@@ -238,7 +250,7 @@ td.ck { width: 64px; text-align: center; }
     </section>
   </div>
 
-  <p class="foot">Source : OurAirports, base du domaine public (données du 18/10/2026). Héliports, ballons et terrains fermés exclus. La mention « Militaire » est estimée d'après le nom du terrain et reste indicative. Connecté avec Google, chaque coche et chaque ajout est enregistré en ligne et synchronisé en direct sur tous vos appareils.</p>
+  <p class="foot">Source : OurAirports, base du domaine public (données du 18/10/2026). Héliports, ballons et terrains fermés exclus. La mention « Militaire » est estimée d'après le nom du terrain et reste indicative. Connecté avec Google, chaque coche, ajout ou modification est enregistré en ligne et synchronisé en direct sur tous vos appareils.</p>
 </div>
 
 <template id="tplCountry">
@@ -269,12 +281,12 @@ td.ck { width: 64px; text-align: center; }
   <form class="addform" id="addForm" hidden novalidate>
     <h3>Ajouter un aéroport</h3>
     <div class="grid-f">
-      <label>Pays <span class="req">*</span><select class="field" id="fPays" required></select></label>
-      <label>Code OACI <span class="req">*</span><input class="field" id="fCode" maxlength="10" placeholder="ex. LFQT" autocomplete="off" style="text-transform:uppercase;font-family:var(--f-mono)"></label>
-      <label class="wide">Nom <span class="req">*</span><input class="field" id="fNom" maxlength="120" placeholder="ex. Merville-Calonne" autocomplete="off"></label>
+      <label><span>Pays <span class="req">*</span></span><select class="field" id="fPays" required></select></label>
+      <label><span>Code OACI <span class="req">*</span></span><input class="field" id="fCode" maxlength="10" placeholder="ex. LFQT" autocomplete="off" style="text-transform:uppercase;font-family:var(--f-mono)"></label>
+      <label class="wide"><span>Nom <span class="req">*</span></span><input class="field" id="fNom" maxlength="120" placeholder="ex. Merville-Calonne" autocomplete="off"></label>
       <label>Code IATA<input class="field" id="fIata" maxlength="3" placeholder="ex. HZB" autocomplete="off" style="text-transform:uppercase;font-family:var(--f-mono)"></label>
       <label>Usage<select class="field" id="fUsage"><option value="0">Civil</option><option value="1">Militaire</option></select></label>
-      <label>Déjà visité ?<select class="field" id="fCoche"><option value="0">Non</option><option value="1">Oui</option></select></label>
+      <label>Déjà visité ?<select class="field" id="fCoche"><option value="1" selected>Oui</option><option value="0">Non</option></select></label>
     </div>
     <div class="form-actions">
       <button type="submit" class="btn solid">✓ Valider l'ajout</button>
@@ -290,6 +302,7 @@ td.ck { width: 64px; text-align: center; }
         <th aria-sort="none" data-k="on" style="text-align:center"><button type="button">Coché</button></th>
         <th aria-sort="none" data-k="iata" class="c-iata"><button type="button">IATA</button></th>
         <th aria-sort="none" data-k="mil"><button type="button">Usage</button></th>
+        <th class="act"><span class="sr">Modifier</span></th>
       </tr></thead>
       <tbody id="rows"></tbody>
     </table>
@@ -378,19 +391,24 @@ onAuthStateChanged(auth, user => {
   // ---------- État ----------
   let PAYS = [];                 // [{c, n, a:[[ident, code, name, iata, mil]], nn}]
   const byIso = new Map();
-  const state = new Map();       // iso -> {checked:Set, added:[]}
+  const state = new Map();       // iso -> {checked:Set, added:[], edits:{k:{code,name,iata,mil}}}
+  let editing = null, delAsk = false;   // ligne en cours de modification
   let current = null;
   let view = { q: '', filter: 'all', sort: 'code', dir: 1, shown: PAGE };
   let db = null, store = 'none';
   const dirty = new Set(), writing = new Set();
 
   const st = iso => {
-    if (!state.has(iso)) state.set(iso, { checked: new Set(), added: [] });
+    if (!state.has(iso)) state.set(iso, { checked: new Set(), added: [], edits: {} });
     return state.get(iso);
   };
   const rowsOf = p => {
     const s = st(p.c);
-    const base = p.a.map(r => ({ k: r[0], code: r[1] || r[0], name: r[2], iata: r[3], mil: r[4], user: false }));
+    const base = p.a.map(r => {
+      const o = { k: r[0], code: r[1] || r[0], name: r[2], iata: r[3], mil: r[4], user: false };
+      const e = s.edits[r[0]];
+      return e ? { ...o, code: e.code ?? o.code, name: e.name ?? o.name, iata: e.iata ?? o.iata, mil: e.mil ?? o.mil, orig: o } : o;
+    });
     return base.concat(s.added.map(a => ({ k: a.k, code: a.code, name: a.name, iata: a.iata || '', mil: a.mil ? 1 : 0, user: true })));
   };
   const totalOf = p => p.a.length + st(p.c).added.length;
@@ -406,13 +424,13 @@ onAuthStateChanged(auth, user => {
     try {
       const raw = localStorage.getItem(LS); if (!raw) return;
       const o = JSON.parse(raw);
-      for (const iso in o) state.set(iso, { checked: new Set(o[iso].checked || []), added: o[iso].added || [] });
+      for (const iso in o) state.set(iso, { checked: new Set(o[iso].checked || []), added: o[iso].added || [], edits: o[iso].edits || {} });
     } catch (e) {}
   }
   function saveLocal() {
     try {
       const o = {};
-      for (const [iso, s] of state) if (s.checked.size || s.added.length) o[iso] = { checked: [...s.checked], added: s.added };
+      for (const [iso, s] of state) if (s.checked.size || s.added.length || Object.keys(s.edits).length) o[iso] = { checked: [...s.checked], added: s.added, edits: s.edits };
       localStorage.setItem(LS, JSON.stringify(o));
     } catch (e) {}
   }
@@ -428,7 +446,7 @@ onAuthStateChanged(auth, user => {
     setSync('busy', 'Enregistrement…');
     const s = st(iso);
     try {
-      await db.collection('pays').doc(iso).set({ checked: [...s.checked], added: s.added, maj: new Date().toISOString() });
+      await db.collection('pays').doc(iso).set({ checked: [...s.checked], added: s.added, edits: s.edits, maj: new Date().toISOString() });
       setSync('ok', 'Enregistré');
     } catch (e) {
       if (e && e.code === 'invalid_argument') { store = 'readonly'; setSync('local', 'Lecture seule'); render(); }
@@ -462,11 +480,11 @@ onAuthStateChanged(auth, user => {
         if (writing.has(iso) || dirty.has(iso)) continue;
         if (ch.type === 'removed') { state.delete(iso); continue; }
         const d = ch.doc.data() || {};
-        state.set(iso, { checked: new Set(Array.isArray(d.checked) ? d.checked : []), added: Array.isArray(d.added) ? d.added : [] });
+        state.set(iso, { checked: new Set(Array.isArray(d.checked) ? d.checked : []), added: Array.isArray(d.added) ? d.added : [], edits: d.edits && typeof d.edits === 'object' ? d.edits : {} });
       }
       if (store === 'readonly') setSync('local', 'Lecture seule');
       else if (!writing.size) setSync('ok', snap.metadata.fromCache ? 'Synchronisation…' : 'Synchronisé');
-      renderAll();
+      if (!editing) renderAll(); else { renderGlobal(); renderIndex(); }
     }, err => { setSync('local', 'Synchronisation interrompue'); });
   }
 
@@ -513,10 +531,10 @@ onAuthStateChanged(auth, user => {
       sec.querySelectorAll('[data-filter]').forEach(x => x.setAttribute('aria-pressed', x === b));
       renderRows();
     }));
-    sec.querySelectorAll('thead th').forEach(th => th.querySelector('button').addEventListener('click', () => {
+    sec.querySelectorAll('thead th[data-k]').forEach(th => th.querySelector('button').addEventListener('click', () => {
       const k = th.dataset.k;
       view.dir = view.sort === k ? -view.dir : 1; view.sort = k;
-      sec.querySelectorAll('thead th').forEach(x => x.setAttribute('aria-sort', x === th ? (view.dir === 1 ? 'ascending' : 'descending') : 'none'));
+      sec.querySelectorAll('thead th[data-k]').forEach(x => x.setAttribute('aria-sort', x === th ? (view.dir === 1 ? 'ascending' : 'descending') : 'none'));
       renderRows();
     }));
     $('#rows').addEventListener('change', e => {
@@ -526,6 +544,16 @@ onAuthStateChanged(auth, user => {
       cb.closest('tr').classList.toggle('on', cb.checked);
       persist(current.c);
       renderHead(); renderGlobal(); renderIndex();
+    });
+    $('#rows').addEventListener('click', e => {
+      const ed = e.target.closest('[data-edit]');
+      if (ed) { editing = ed.dataset.edit; delAsk = false; renderRows(); const i = $('#eName'); if (i) i.focus(); return; }
+      const a = e.target.closest('[data-act]'); if (a) saveEdit(a.dataset.act);
+    });
+    $('#rows').addEventListener('keydown', e => {
+      if (!e.target.closest('tr.edit')) return;
+      if (e.key === 'Enter' && e.target.matches('input, select')) { e.preventDefault(); saveEdit('save'); }
+      if (e.key === 'Escape') saveEdit('cancel');
     });
     $('#more').addEventListener('click', e => { if (e.target.closest('#showMore')) { view.shown += PAGE; renderRows(); } });
 
@@ -582,13 +610,15 @@ onAuthStateChanged(auth, user => {
     const vis = list.slice(0, view.shown);
     $('#rows').innerHTML = vis.map(r => {
       const on = s.checked.has(r.k);
+      if (r.k === editing && !ro) return editRow(r, on);
       const loc = !isIcao(r.code);
       return `<tr class="${on ? 'on' : ''}">
         <td class="code${loc ? ' loc' : ''}"><span${loc ? ' class="loc"' : ''}>${esc(r.code)}</span></td>
-        <td>${esc(r.name)}${r.user ? '<span class="tag new">Ajouté</span>' : ''}</td>
+        <td>${esc(r.name)}</td>
         <td class="ck"><input type="checkbox" class="cb" data-k="${esc(r.k)}" ${on ? 'checked' : ''} ${ro ? 'disabled' : ''} aria-label="Coché : ${esc(r.name)}"></td>
         <td class="iata">${esc(r.iata)}</td>
-        <td><span class="tag${r.mil ? ' mil' : ''}">${r.mil ? 'Militaire' : 'Civil'}</span></td></tr>`;
+        <td><span class="tag${r.mil ? ' mil' : ''}">${r.mil ? 'Militaire' : 'Civil'}</span></td>
+        <td class="act">${ro ? '' : `<button type="button" class="ico" data-edit="${esc(r.k)}" title="Modifier" aria-label="Modifier ${esc(r.name)}">✎</button>`}</td></tr>`;
     }).join('');
     const more = $('#more');
     if (!list.length) more.innerHTML = '<span>Aucun terrain ne correspond à cette recherche.</span>';
@@ -597,7 +627,53 @@ onAuthStateChanged(auth, user => {
     $('#toggleForm').hidden = ro;
   }
 
+  function editRow(r, on) {
+    return `<tr class="edit${on ? ' on' : ''}" data-row="${esc(r.k)}">
+      <td><label class="sr" for="eCode">Code OACI</label><input class="field f-code" id="eCode" maxlength="10" value="${esc(r.code)}"></td>
+      <td><label class="sr" for="eName">Nom</label><input class="field f-name" id="eName" maxlength="120" value="${esc(r.name)}" style="width:100%"></td>
+      <td class="ck"><input type="checkbox" class="cb" data-k="${esc(r.k)}" ${on ? 'checked' : ''} aria-label="Coché : ${esc(r.name)}"></td>
+      <td><label class="sr" for="eIata">Code IATA</label><input class="field f-iata" id="eIata" maxlength="3" value="${esc(r.iata)}"></td>
+      <td><label class="sr" for="eMil">Usage</label><select class="field" id="eMil"><option value="0"${r.mil ? '' : ' selected'}>Civil</option><option value="1"${r.mil ? ' selected' : ''}>Militaire</option></select></td>
+      <td class="act"><div class="edit-actions">
+        <button type="button" class="btn solid" data-act="save">Enregistrer</button>
+        <button type="button" class="btn" data-act="cancel">Annuler</button>
+        ${r.orig ? '<button type="button" class="btn" data-act="reset" title="Revenir aux données d\u2019origine">Rétablir l\u2019original</button>' : ''}
+        ${r.user ? `<button type="button" class="btn danger" data-act="del">${delAsk ? 'Confirmer la suppression' : 'Supprimer'}</button>` : ''}
+        <span class="edit-msg" id="eMsg" role="status"></span>
+      </div></td></tr>`;
+  }
+
+  function saveEdit(act) {
+    const p = current, s = st(p.c), k = editing;
+    const r = rowsOf(p).find(x => x.k === k); if (!r) { editing = null; renderRows(); return; }
+    const msg = $('#eMsg');
+    if (act === 'cancel') { editing = null; delAsk = false; renderRows(); return; }
+    if (act === 'del') {
+      if (!delAsk) { delAsk = true; renderRows(); return; }
+      s.added = s.added.filter(a => a.k !== k); s.checked.delete(k);
+    } else if (act === 'reset') {
+      delete s.edits[k];
+    } else {
+      const code = $('#eCode').value.trim().toUpperCase(), name = $('#eName').value.trim();
+      const iata = $('#eIata').value.trim().toUpperCase(), mil = $('#eMil').value === '1' ? 1 : 0;
+      if (!code || !name) { msg.textContent = 'Le code OACI et le nom sont obligatoires.'; return; }
+      if (!/^[A-Z0-9-]{2,10}$/.test(code)) { msg.textContent = 'Code OACI : lettres, chiffres ou tirets uniquement.'; return; }
+      if (iata && !/^[A-Z0-9]{3}$/.test(iata)) { msg.textContent = 'Le code IATA comporte 3 lettres ou chiffres.'; return; }
+      if (rowsOf(p).some(x => x.k !== k && x.code === code)) { msg.textContent = `Le code ${code} existe déjà pour ${p.n}.`; return; }
+      if (r.user) {
+        const a = s.added.find(x => x.k === k); Object.assign(a, { code, name, iata, mil });
+      } else {
+        const o = r.orig || r;
+        if (code === o.code && name === o.name && iata === o.iata && mil === o.mil) delete s.edits[k];
+        else s.edits[k] = { code, name, iata, mil };
+      }
+    }
+    editing = null; delAsk = false;
+    persist(p.c); renderAll();
+  }
+
   function select(iso, keepView) {
+    editing = null; delAsk = false;
     const p = byIso.get(iso); if (!p) return;
     current = p;
     if (!keepView) { view = { ...view, q: '', filter: 'all', shown: PAGE }; }
@@ -631,7 +707,7 @@ onAuthStateChanged(auth, user => {
     if (coche) s.checked.add(k);
     persist(iso);
     $('#fCode').value = ''; $('#fNom').value = ''; $('#fIata').value = '';
-    $('#fUsage').value = '0'; $('#fCoche').value = '0';
+    $('#fUsage').value = '0'; $('#fCoche').value = '1';
     if (iso !== current.c) select(iso);
     view.q = ''; view.filter = 'all'; $('#aSearch').value = '';
     renderAll();
