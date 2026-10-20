@@ -3,6 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14233a">
+<meta name="description" content="Suivi de ma collection d'aéroports et d'aérodromes : 239 pays, cases à cocher, carte et export CSV.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Aérodromes">
 <title>Carnet des aérodromes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -718,7 +727,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
 }
 
 * { box-sizing: border-box; }
+html { -webkit-tap-highlight-color: transparent; }
 body {
+  overflow-x: clip;
   background: var(--bg); color: var(--ink);
   font: 400 15px/1.45 var(--f-body);
   padding-left: max(16px, env(safe-area-inset-left, 0px));
@@ -825,6 +836,18 @@ button, input, select { font: inherit; color: inherit; }
 .seg button + button { border-left: 1px solid var(--line); }
 .seg button[aria-pressed="true"] { background: var(--ink); color: var(--panel); }
 .msort { display: none; }
+.fab {
+  display: none; position: fixed; z-index: 40; align-items: center; gap: 8px;
+  right: max(16px, calc(env(safe-area-inset-right, 0px) + 12px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  height: 54px; padding: 0 20px 0 16px; border: 0; border-radius: 27px; background: var(--chart); color: #fff;
+  font-weight: 600; font-size: 15px; box-shadow: var(--shadow); cursor: pointer;
+}
+.fab svg { width: 22px; height: 22px; }
+.fab.off { display: none !important; }
+.seg button .lbl { margin-left: 6px; }
+.seg button svg { width: 17px; height: 17px; vertical-align: -3px; }
+.export .btn svg { width: 18px; height: 18px; vertical-align: -3px; margin-right: 6px; }
+@media (max-width: 560px) { .export .btn svg { margin: 0; } }
 .tools.mapmode .msort { display: none !important; }
 .btn {
   border: 1.5px solid var(--chart); color: var(--chart); background: none; border-radius: 7px;
@@ -939,79 +962,112 @@ tr.edit .edit-msg:empty { display: none; }
 .foot { color: var(--ink-2); font-size: 13px; max-width: 75ch; }
 .loading { padding: 60px 20px; text-align: center; color: var(--ink-2); }
 .toast {
-  position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 50;
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(84px + env(safe-area-inset-bottom, 0px)); z-index: 50;
   background: var(--ink); color: var(--panel); padding: 10px 16px; border-radius: 8px; font-size: 14px; box-shadow: var(--shadow); max-width: calc(100vw - 32px);
 }
 
+/* ---------- Tablette ---------- */
 /* ---------- Tablette ---------- */
 @media (max-width: 860px) {
   .main { grid-template-columns: minmax(0, 1fr); }
   .index { display: none; }
   .mobile-pick { display: grid; gap: 6px; padding: 14px 16px 0; }
-  .board { grid-template-columns: minmax(0, 1fr); padding: 16px; }
-  .big { text-align: left; }
+  .board { padding: 16px; }
+  /* 16 px minimum : évite le zoom automatique d'iOS quand on touche un champ (cause du défilement horizontal) */
+  .field, select, input { font-size: 16px !important; }
 }
 
-/* ---------- Téléphone : les lignes deviennent des cartes ---------- */
-@media (max-width: 640px) {
-  body { padding-block: 12px 32px; }
-  .wrap { gap: 12px; }
-  .board { gap: 12px; }
-  .board .sub { font-size: 14px; }
-  .big { font-size: 52px; }
-  .stats { gap: 4px 14px; font-size: 13px; }
-  .export .btn { width: 100%; }
-  .export { flex: 1 1 100%; }
-  .menu { left: 0; right: 0; min-width: 0; }
-  .country-head { padding: 14px 16px; }
+/* ---------- Écrans étroits : les lignes deviennent des cartes ---------- */
+@media (max-width: 760px) {
   .tools { padding: 12px 16px; gap: 8px; }
   .tools .field { flex: 1 1 100%; }
-  .tools .seg { flex: 1 1 100%; }
-  .tools .seg[aria-label="Vue"] { flex: 0 0 auto; }
-  .tools .seg button { flex: 1; padding: 9px 8px; white-space: nowrap; }
-  .msort { display: block; flex: 1 1 120px; }
-  #toggleForm { flex: 1 1 100%; }
+  .tools .seg[aria-label="Afficher"] { flex: 1 1 auto; }
+  .tools .seg[aria-label="Afficher"] button { flex: 1; }
+  .tools .seg button { padding: 9px 10px; white-space: nowrap; }
+  .msort { display: block; flex: 1 1 100%; }
+  #toggleForm { display: none; }
+  .fab { display: inline-flex; }
   .addform { padding: 14px 16px 18px; }
   .grid-f { grid-template-columns: 1fr 1fr; }
   .grid-f .wide, .grid-f .full { grid-column: 1 / -1; }
   .legend { padding: 10px 16px; }
-  #map { height: 62vh; }
+  #map { height: calc(100dvh - 210px); min-height: 320px; border-radius: 0 0 var(--r) var(--r); }
 
   thead { display: none; }
   table, tbody { display: block; }
   tbody tr {
-    display: grid; grid-template-columns: 5.2rem minmax(0, 1fr) 44px 40px;
+    display: grid; grid-template-columns: 4.9rem minmax(0, 1fr) 48px 36px;
     grid-template-areas: "code name ck act" "iata use ck act";
-    gap: 2px 8px; align-items: center; padding: 10px 12px 10px 16px; border-bottom: 1px solid var(--line);
+    gap: 3px 8px; align-items: center; padding: 11px 8px 11px 16px; border-bottom: 1px solid var(--line);
   }
   tbody tr.on { border-bottom-color: var(--go-line); }
-  tbody td { padding: 0; border: 0 !important; }
+  tbody td { padding: 0; border: 0 !important; min-width: 0; }
   td.code { grid-area: code; font-size: 14px; }
-  td.nm { grid-area: name; font-weight: 500; line-height: 1.3; }
+  td.nm { grid-area: name; font-weight: 500; line-height: 1.3; overflow-wrap: anywhere; }
   td.iata { grid-area: iata; font-size: 12px; }
   td.iata:empty::before { content: "—"; opacity: .4; }
   td.use { grid-area: use; }
-  td.ck { grid-area: ck; width: auto; justify-self: center; }
-  td.act { grid-area: act; justify-self: end; }
+  td.ck { grid-area: ck; width: 48px; height: 48px; display: grid; place-items: center; justify-self: center; }
+  td.act { grid-area: act; width: auto; justify-self: end; }
+  .ico { opacity: .55; }
+  td.use .tag:not(.mil) { display: none; }
+  tbody tr { min-height: 64px; }
+  .mobile-pick .eyebrow { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .mobile-pick select { font-weight: 600; }
+  .country-head { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+  .country-head .title-row { grid-column: 2; grid-row: 1; }
+  .country-head .title-row h2 { display: none; }
+  .country-head .stats { grid-column: 1; grid-row: 1; }
+  .country-head .bar { grid-column: 1 / -1; }
   .cb { width: 28px; height: 28px; }
   .cb::before { width: 14px; height: 8px; }
+  .more { padding-bottom: 84px; }
 
   tr.edit { grid-auto-flow: dense; grid-template-columns: 1fr 1fr; grid-template-areas: none; gap: 10px; padding: 14px 16px; }
   tr.edit td { grid-area: auto; }
   tr.edit td.nm, tr.edit td.act { grid-column: 1 / -1; }
-  tr.edit td.code { grid-column: 1; } tr.edit td.ck { grid-column: 2; }
-  tr.edit td.ck { justify-self: start; display: flex; align-items: center; gap: 10px; }
+  tr.edit td.code { grid-column: 1; }
+  tr.edit td.ck { grid-column: 2; width: auto; height: auto; justify-self: start; display: flex; align-items: center; gap: 10px; align-self: end; padding-bottom: 7px; }
   tr.edit .elab { display: block; font-family: var(--f-body); letter-spacing: 0; font-size: 12px; font-weight: 600; color: var(--ink-2); margin-bottom: 3px; }
   tr.edit td.ck .elab { margin: 0; }
   tr.edit .f-code, tr.edit .f-iata, tr.edit select { width: 100%; }
   tr.edit td.act { width: auto; justify-self: stretch; white-space: normal; text-align: left; padding-top: 4px; }
-  tr.edit .field { height: 42px; font-size: 16px; }
+  tr.edit .field { height: 44px; }
   .edit-actions { justify-content: flex-end; gap: 8px; }
   .ibtn { width: 44px; height: 44px; }
   .ibtn svg { width: 20px; height: 20px; }
-  .ibtn.ok { width: auto; padding: 0 16px; grid-auto-flow: column; gap: 8px; font-weight: 600; margin-left: auto; }
+  .ibtn.ok { width: auto; padding: 0 18px; grid-auto-flow: column; gap: 8px; font-weight: 600; margin-left: auto; }
   .ibtn.ok .lbl { display: inline; }
   tr.edit .edit-msg { text-align: left; }
+}
+
+/* ---------- Téléphone portrait : en-tête compact ---------- */
+@media (max-width: 560px) {
+  body { padding-block: 10px 24px; }
+  .wrap { gap: 10px; }
+  .board { gap: 10px 12px; padding: 14px; grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+  .board .eyebrow, .board .sub { display: none; }
+  .board h1 { font-size: 26px; }
+  .big { font-size: 40px; text-align: right; }
+  .runway { gap: 6px; }
+  .bar { height: 12px; }
+  .stats { gap: 2px 12px; font-size: 13px; }
+  .finder { gap: 8px; flex-wrap: nowrap; }
+  .gsearch { flex: 1 1 auto; }
+  .export { flex: none; }
+  .export .btn { width: 44px; height: 44px; padding: 0; display: grid; place-items: center; }
+  .export .btn .lbl { display: none; }
+  .menu { left: auto; right: 0; min-width: min(280px, calc(100vw - 32px)); }
+  .results { left: 0; right: -52px; }
+  .mobile-pick { padding: 12px 14px 0; }
+  .country-head { padding: 12px 14px; gap: 8px; }
+  .title-row h2 { font-size: 26px; }
+  .pct { font-size: 28px; }
+  .tools { padding: 10px 14px; }
+  .tools .seg[aria-label="Vue"] button .lbl { display: none; }
+  .tools .seg[aria-label="Vue"] button { padding: 8px 11px; display: grid; place-items: center; }
+  .grid-f { grid-template-columns: 1fr; }
+  tbody tr { padding-left: 14px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
@@ -1040,11 +1096,11 @@ tr.edit .edit-msg:empty { display: none; }
     <div class="finder">
       <div class="gsearch">
         <label class="sr" for="gSearch">Rechercher dans tous les pays</label>
-        <input class="field" id="gSearch" type="search" placeholder="Rechercher partout : code OACI, IATA ou nom…" autocomplete="off" aria-controls="gResults" aria-expanded="false">
+        <input class="field" id="gSearch" type="search" placeholder="Recherche globale : OACI, IATA, nom…" autocomplete="off" aria-controls="gResults" aria-expanded="false">
         <div class="results" id="gResults" hidden></div>
       </div>
       <div class="export">
-        <button type="button" class="btn quiet" id="exportBtn" aria-expanded="false" aria-controls="exportMenu">⤓ Exporter en CSV</button>
+        <button type="button" class="btn quiet" id="exportBtn" aria-expanded="false" aria-controls="exportMenu" title="Exporter en CSV"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg><span class="lbl">Exporter en CSV</span></button>
         <div class="menu" id="exportMenu" hidden>
           <button type="button" data-export="mine"><b>Ma collection</b><span>Uniquement les aéroports cochés</span></button>
           <button type="button" data-export="all"><b>Tous les aéroports</b><span>Avec une colonne « Coché » oui / non</span></button>
@@ -1071,6 +1127,7 @@ tr.edit .edit-msg:empty { display: none; }
   <p class="foot">Source : OurAirports, base du domaine public (données du 18/10/2026). Héliports, ballons et terrains fermés exclus. La mention « Militaire » est estimée d'après le nom du terrain et reste indicative. Fond de carte © contributeurs OpenStreetMap. Connecté avec Google, chaque coche, ajout ou modification est enregistré en ligne et synchronisé en direct sur tous vos appareils.</p>
 </div>
 <div class="toast" id="toast" role="status" hidden></div>
+<button type="button" class="fab" id="fab" aria-label="Ajouter un aéroport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Ajouter</button>
 
 <template id="tplCountry">
   <div class="mobile-pick">
@@ -1096,8 +1153,8 @@ tr.edit .edit-msg:empty { display: none; }
       <button type="button" data-filter="off" aria-pressed="false">À cocher</button>
     </div>
     <div class="seg" role="group" aria-label="Vue">
-      <button type="button" data-view="list" aria-pressed="true">Liste</button>
-      <button type="button" data-view="map" aria-pressed="false">Carte</button>
+      <button type="button" data-view="list" aria-pressed="true" title="Liste"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><span class="lbl">Liste</span></button>
+      <button type="button" data-view="map" aria-pressed="false" title="Carte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z"/><path d="M9 4v14M15 6v14"/></svg><span class="lbl">Carte</span></button>
     </div>
     <label class="sr" for="mSort">Trier</label>
     <select class="field msort" id="mSort">
@@ -1156,7 +1213,7 @@ window.claude = { use: n => n === 'db' ? window.__fbReady : Promise.resolve(null
 </script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut }
+import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, setDoc, onSnapshot }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -1183,8 +1240,17 @@ let firstState = true, currentUid = null;
 btn.addEventListener('click', async () => {
   try {
     if (auth.currentUser) await signOut(auth);
-    else await signInWithPopup(auth, new GoogleAuthProvider());
+    else {
+      try { await signInWithPopup(auth, new GoogleAuthProvider()); }
+      catch (e) {
+        // Application installée (PWA) : certaines plateformes refusent les fenêtres pop-up → redirection
+        if (e && /popup-blocked|operation-not-supported|popup-closed-by-user|cancelled-popup/.test(e.code || '') && window.matchMedia('(display-mode: standalone)').matches) {
+          await signInWithRedirect(auth, new GoogleAuthProvider());
+        } else throw e;
+      }
+    }
   } catch (e) {
+    if (e && e.code === 'auth/popup-closed-by-user') return;
     const sync = document.getElementById('sync');
     sync.dataset.s = 'local';
     sync.textContent = e && e.code === 'auth/unauthorized-domain'
@@ -1415,6 +1481,7 @@ onAuthStateChanged(auth, user => {
       if (open) { $('#fPays').value = current.c; $('#fMsg').textContent = ''; $('#fCode').focus(); }
     };
     tg.addEventListener('click', () => openForm(form.hidden));
+    $('#fab').addEventListener('click', () => { openForm(true); form.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
     $('#cancelForm').addEventListener('click', () => openForm(false));
     form.addEventListener('submit', e => { e.preventDefault(); addAirport(); });
   }
@@ -1433,6 +1500,7 @@ onAuthStateChanged(auth, user => {
     $('#listView').hidden = mode !== 'list';
     $('#mapView').hidden = mode !== 'map';
     $('#country .tools').classList.toggle('mapmode', mode === 'map');
+    $('#fab').classList.toggle('off', mode === 'map');
     try { localStorage.setItem(LS + '-vue', mode); } catch (e) {}
     if (mode === 'map') renderMap(true);
   }
@@ -1502,6 +1570,7 @@ onAuthStateChanged(auth, user => {
     else more.innerHTML = `<span class="num">${fmt(list.length)} terrain${list.length > 1 ? 's' : ''}</span>`;
     if (flashKey) { const fk = flashKey; setTimeout(() => { if (flashKey === fk) flashKey = null; }, 1700); }
     $('#toggleForm').hidden = ro;
+    $('#fab').hidden = ro;
   }
 
   function editRow(r, on) {
@@ -1670,7 +1739,8 @@ onAuthStateChanged(auth, user => {
   function searchAll(qRaw) {
     const q = norm(qRaw.trim()); if (q.length < 2) return null;
     const qu = qRaw.trim().toUpperCase();
-    const exact = [], starts = [], words = [], rest = [];
+    const exact = [], starts = [], whole = [], words = [], rest = [];
+    const wholeRe = new RegExp('(^|[^a-z0-9])' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '($|[^a-z0-9])');
     const wordRe = new RegExp('(^|[^a-z0-9])' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
     for (const p of PAYS) {
       for (const r of rowsOf(p)) {
@@ -1679,13 +1749,14 @@ onAuthStateChanged(auth, user => {
         else if (code.startsWith(qu)) starts.push([p, r]);
         else {
           const nn = norm(r.name);
-          if (wordRe.test(nn)) words.push([p, r]);
+          if (wholeRe.test(nn)) whole.push([p, r]);
+          else if (wordRe.test(nn)) words.push([p, r]);
           else if (nn.includes(q) || norm(code + ' ' + iata).includes(q)) rest.push([p, r]);
         }
       }
       if (exact.length + starts.length > 60) break;
     }
-    const all = exact.concat(starts, words, rest);
+    const all = exact.concat(starts, whole, words, rest);
     return { total: all.length, items: all.slice(0, 40) };
   }
   function refreshResults() {
@@ -1797,6 +1868,25 @@ onAuthStateChanged(auth, user => {
   });
   window.addEventListener('hashchange', () => { const h = location.hash.slice(1).toUpperCase(); if (byIso.has(h) && (!current || current.c !== h)) select(h); });
 })();
+</script>
+<script>
+/* Application installable : enregistrement du service worker + avis de mise à jour */
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      const tell = () => {
+        const t = document.getElementById('toast');
+        t.textContent = 'Nouvelle version disponible · touchez pour l’installer';
+        t.hidden = false; t.style.cursor = 'pointer';
+        t.onclick = () => location.reload();
+      };
+      reg.addEventListener('updatefound', () => {
+        const w = reg.installing;
+        w && w.addEventListener('statechange', () => { if (w.state === 'installed' && navigator.serviceWorker.controller) tell(); });
+      });
+    }).catch(() => {});
+  });
+}
 </script>
 
 </body>
