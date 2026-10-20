@@ -1021,7 +1021,7 @@ td.act{width:1%;text-align:right;white-space:nowrap}
     </section>
   </div>
 
-  <p class="foot">Source : OurAirports (domaine public), données du 18/10/2026, hors héliports, ballons et terrains fermés. Fond de carte © contributeurs OpenStreetMap. Connecté avec Google, tout est enregistré en ligne et synchronisé sur vos appareils. <span class="num" id="buildTag">Version 2026.10.20-1711</span></p>
+  <p class="foot">Source : OurAirports (domaine public), données du 18/10/2026, hors héliports, ballons et terrains fermés. Fond de carte © OpenStreetMap France et contributeurs OpenStreetMap. Connecté avec Google, tout est enregistré en ligne et synchronisé sur vos appareils. <span class="num" id="buildTag">Version 2026.10.20-1718</span></p>
 </div>
 
 <div class="toast" id="toast" role="status" hidden></div>
@@ -1179,7 +1179,7 @@ onAuthStateChanged(auth, user => {
 <script>
 (() => {
   const PAGE = 300;
-  const BUILD = '2026.10.20-1711';
+  const BUILD = '2026.10.20-1718';
   const $ = (s, r = document) => r.querySelector(s);
   const fmt = n => n.toLocaleString('fr-FR');
   const pctTxt = (a, b) => (b ? (a / b * 100) : 0).toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -1448,9 +1448,18 @@ onAuthStateChanged(auth, user => {
     try { await loadLeaflet(); } catch (e) { $('#mapNote').hidden = false; $('#mapNote').textContent = 'La carte n’a pas pu se charger. Vérifiez la connexion internet.'; return; }
     if (!map) {
       map = L.map('map', { preferCanvas: true, worldCopyJump: true });
-      const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
-      let errs = 0;
-      tiles.on('tileerror', () => { if (++errs === 4) { $('#mapNote').hidden = false; $('#mapNote').textContent = 'Fond de carte indisponible : les points restent cliquables.'; } });
+      // Fond OpenStreetMap France : noms de lieux en français en priorité (name:fr), partout dans le monde.
+      // S'il ne répond pas, bascule sur CARTO Voyager (noms en alphabet latin).
+      let tiles = L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', { subdomains: 'abc', maxZoom: 20, attribution: '© OpenStreetMap France · © contributeurs OpenStreetMap' }).addTo(map);
+      let errs = 0, ok = 0, fallback = false;
+      tiles.on('tileload', () => ok++);
+      tiles.on('tileerror', () => {
+        if (++errs < 6 || ok > errs || fallback) return;
+        fallback = true; map.removeLayer(tiles);
+        tiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 20, attribution: '© OpenStreetMap · © CARTO' }).addTo(map);
+        let e2 = 0;
+        tiles.on('tileerror', () => { if (++e2 === 4) { $('#mapNote').hidden = false; $('#mapNote').textContent = 'Fond de carte indisponible : les points restent cliquables.'; } });
+      });
       layer = L.layerGroup().addTo(map);
       $('#map').addEventListener('change', e => {
         const cb = e.target.closest('[data-mk]'); if (!cb || !current) return;
