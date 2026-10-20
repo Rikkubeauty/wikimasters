@@ -1,8 +1,8 @@
 /* Carnet des aérodromes — service worker
-   Page : réseau d'abord (toujours la dernière version), copie locale si hors ligne.
+   Page : réseau d'abord, sans cache HTTP (toujours la dernière version publiée), copie locale si hors ligne.
    Bibliothèques, polices et icônes : copie locale d'abord.
    Les données (coches, ajouts) ne passent pas ici : Firebase gère sa propre synchronisation hors ligne. */
-const VERSION = 'v1';
+const VERSION = 'v2';
 const SHELL = `carnet-shell-${VERSION}`;
 const ASSETS = `carnet-assets-${VERSION}`;
 const PRECACHE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
@@ -32,7 +32,7 @@ self.addEventListener('fetch', e => {
   // Page de l'application : réseau d'abord
   if (req.mode === 'navigate' || (url.startsWith(self.location.origin) && /\/(index\.html)?(\?.*)?$/.test(new URL(url).pathname + new URL(url).search))) {
     e.respondWith(
-      fetch(req).then(res => {
+      fetch(req.url, { cache: 'no-cache', credentials: 'same-origin' }).then(res => {
         if (res.ok) { const copy = res.clone(); caches.open(SHELL).then(c => c.put('./index.html', copy)); }
         return res;
       }).catch(() => caches.match('./index.html').then(r => r || caches.match('./')))
