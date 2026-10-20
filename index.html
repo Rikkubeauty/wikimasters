@@ -899,18 +899,9 @@ td.act{width:1%;text-align:right;white-space:nowrap}
 .fld{display:grid;gap:5px;min-width:0}
 .fld>span{font:700 11.5px/1 var(--display);letter-spacing:.11em;text-transform:uppercase;color:var(--muted)}
 .code-in{text-transform:uppercase;font-family:var(--mono);font-weight:600;letter-spacing:.03em}
-.switch-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--field);cursor:pointer}
-.switch-row b{display:block;font-weight:600}
-.switch-row small{color:var(--muted);font-size:12.5px}
-.switch{appearance:none;-webkit-appearance:none;width:44px;height:26px;border-radius:13px;background:var(--track);border:1px solid var(--line);position:relative;cursor:pointer;flex:none;margin:0;transition:background-color .15s}
-.switch::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .15s}
-.switch:checked{background:var(--ok);border-color:var(--ok)}
-.switch:checked::after{transform:translateX(18px)}
-details.gps summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:14px;padding:2px 0;list-style:none}
-details.gps summary::-webkit-details-marker{display:none}
-details.gps summary::before{content:"+ "}
-details.gps[open] summary::before{content:"− "}
-details.gps .field{margin-top:8px}
+.fld .opt{font:500 12px var(--body);letter-spacing:0;text-transform:none;color:var(--muted)}
+.hint{font-size:12.5px;color:var(--muted)}
+.hint.ok{color:var(--ok);font-weight:600}
 .msg{font-size:13.5px;margin:0}
 .msg:empty{display:none}
 .msg.err{color:var(--err);font-weight:600}
@@ -1030,7 +1021,7 @@ details.gps .field{margin-top:8px}
     </section>
   </div>
 
-  <p class="foot">Source : OurAirports (domaine public), données du 18/10/2026, hors héliports, ballons et terrains fermés. Fond de carte © contributeurs OpenStreetMap. Connecté avec Google, tout est enregistré en ligne et synchronisé sur vos appareils. <span class="num" id="buildTag">Version 2026.10.20-1704</span></p>
+  <p class="foot">Source : OurAirports (domaine public), données du 18/10/2026, hors héliports, ballons et terrains fermés. Fond de carte © contributeurs OpenStreetMap. Connecté avec Google, tout est enregistré en ligne et synchronisé sur vos appareils. <span class="num" id="buildTag">Version 2026.10.20-1711</span></p>
 </div>
 
 <div class="toast" id="toast" role="status" hidden></div>
@@ -1048,8 +1039,7 @@ details.gps .field{margin-top:8px}
       <label class="fld" id="fPaysWrap"><span>Pays</span><select class="field" id="fPays"></select></label>
       <label class="fld"><span>Code OACI</span><input class="field code-in" id="fCode" maxlength="10" placeholder="LFQT" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>
       <label class="fld"><span>Nom</span><input class="field" id="fNom" maxlength="120" placeholder="Merville-Calonne" autocomplete="off"></label>
-      <label class="switch-row" for="fCoche"><span><b>Dans ma collection</b><small id="fCocheHint">Coché par défaut</small></span><input type="checkbox" class="switch" id="fCoche" checked></label>
-      <details class="gps" id="fGps"><summary>Position GPS (facultatif)</summary><input class="field" id="fPos" placeholder="50.6175, 2.6422" autocomplete="off" inputmode="decimal"></details>
+      <label class="fld" id="fGps"><span>Position GPS <em class="opt">· facultatif</em></span><input class="field" id="fPos" placeholder="Collez les coordonnées Wikipédia" autocomplete="off" spellcheck="false"><small class="hint" id="fPosHint">Ex. 34° 18′ 57″ nord, 70° 45′ 48″ est</small></label>
       <p class="msg err" id="fMsg" role="status"></p>
     </div>
     <div class="sheet-foot">
@@ -1189,7 +1179,7 @@ onAuthStateChanged(auth, user => {
 <script>
 (() => {
   const PAGE = 300;
-  const BUILD = '2026.10.20-1704';
+  const BUILD = '2026.10.20-1711';
   const $ = (s, r = document) => r.querySelector(s);
   const fmt = n => n.toLocaleString('fr-FR');
   const pctTxt = (a, b) => (b ? (a / b * 100) : 0).toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -1506,8 +1496,7 @@ onAuthStateChanged(auth, user => {
       $('#sheetTitle').textContent = 'Ajouter un aéroport';
       $('#fPaysWrap').hidden = false; $('#fPays').value = current.c;
       $('#fCode').value = ''; $('#fNom').value = ''; $('#fPos').value = '';
-      $('#fCoche').checked = true; $('#fCocheHint').textContent = 'Coché par défaut';
-      $('#fGps').hidden = false; $('#fGps').open = false;
+      $('#fGps').hidden = false; posHint();
       $('#fDel').hidden = true; $('#fReset').hidden = true;
       $('#fSubmit').textContent = 'Ajouter';
     } else {
@@ -1515,9 +1504,8 @@ onAuthStateChanged(auth, user => {
       $('#sheetTitle').innerHTML = `Modifier <span>${esc(r.code)}</span>`;
       $('#fPaysWrap').hidden = true;
       $('#fCode').value = r.code; $('#fNom').value = r.name;
-      $('#fCoche').checked = st(p.c).checked.has(r.k); $('#fCocheHint').textContent = p.n;
-      $('#fGps').hidden = !r.user; $('#fGps').open = false;
-      $('#fPos').value = r.user && r.lat != null ? `${r.lat}, ${r.lon}` : '';
+      $('#fGps').hidden = !r.user;
+      $('#fPos').value = r.user && r.lat != null ? `${r.lat}, ${r.lon}` : ''; posHint();
       $('#fDel').hidden = !r.user; $('#fReset').hidden = !r.orig;
       $('#fSubmit').textContent = 'Enregistrer';
     }
@@ -1532,14 +1520,47 @@ onAuthStateChanged(auth, user => {
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && sheet) closeSheet(); });
   $('#fab').addEventListener('click', () => openSheet({ mode: 'add' }));
 
-  function parsePos(pos) {
+  // Accepte « 50.6175, 2.6422 » ou le format Wikipédia « 34° 18′ 57″ nord, 70° 45′ 48″ est » (N/S/E/O/W aussi)
+  function parsePos(raw) {
+    const pos = (raw || '').trim();
     if (!pos) return { lat: null, lon: null };
-    const m = pos.replace(/\s+/g, ' ').match(/^(-?\d+(?:[.,]\d+)?)\s*[;, ]\s*(-?\d+(?:[.,]\d+)?)$/);
-    if (!m) return { err: 'Position : latitude puis longitude, par exemple 50.6175, 2.6422.' };
-    const lat = parseFloat(m[1].replace(',', '.')), lon = parseFloat(m[2].replace(',', '.'));
+    const num = x => x == null ? 0 : parseFloat(String(x).replace(',', '.'));
+    let lat, lon;
+    if (/[°ºd]/i.test(pos) || /\b(nord|sud|est|ouest)\b/i.test(pos) || /\d\s*[NSEOW]\b/.test(pos)) {
+      const re = /(-?\d+(?:[.,]\d+)?)\s*[°º]\s*(?:(\d+(?:[.,]\d+)?)\s*(?:[′'’]|min)\s*)?(?:(\d+(?:[.,]\d+)?)\s*(?:″|"|”|''|’’|s)\s*)?\s*(nord|sud|est|ouest|[NSEOW](?![a-z]))?/gi;
+      const parts = [];
+      let m;
+      while ((m = re.exec(pos)) && parts.length < 2) {
+        const d = num(m[1]), v = Math.abs(d) + num(m[2]) / 60 + num(m[3]) / 3600;
+        const dir = (m[4] || '').toLowerCase();
+        const neg = d < 0 || dir === 'sud' || dir === 's' || dir === 'ouest' || dir === 'o' || dir === 'w';
+        const axis = /^(nord|sud|n|s)$/.test(dir) ? 'lat' : /^(est|ouest|e|o|w)$/.test(dir) ? 'lon' : '';
+        parts.push({ v: neg ? -v : v, axis });
+      }
+      if (parts.length !== 2) return { err: 'Position non reconnue. Collez par exemple 34° 18′ 57″ nord, 70° 45′ 48″ est.' };
+      if (parts[0].axis === 'lon' || parts[1].axis === 'lat') parts.reverse();
+      lat = parts[0].v; lon = parts[1].v;
+    } else {
+      const m = pos.replace(/\s+/g, ' ').match(/^(-?\d+(?:[.,]\d+)?)\s*[;, ]\s*(-?\d+(?:[.,]\d+)?)$/) || pos.match(/^(-?\d+[.]\d+)\s*,\s*(-?\d+[.]\d+)$/);
+      if (!m) return { err: 'Position non reconnue. Collez par exemple 34° 18′ 57″ nord, 70° 45′ 48″ est.' };
+      lat = num(m[1]); lon = num(m[2]);
+    }
     if (Math.abs(lat) > 90 || Math.abs(lon) > 180) return { err: 'Position hors limites (latitude ±90, longitude ±180).' };
-    return { lat, lon };
+    return { lat: Math.round(lat * 1e5) / 1e5, lon: Math.round(lon * 1e5) / 1e5 };
   }
+  function posHint() {
+    const h = $('#fPosHint'), v = $('#fPos').value.trim();
+    h.className = 'hint';
+    if (!v) { h.textContent = 'Ex. 34° 18′ 57″ nord, 70° 45′ 48″ est'; return; }
+    const r = parsePos(v);
+    if (r.err) { h.textContent = 'Format non reconnu'; return; }
+    h.className = 'hint ok'; h.textContent = /°|nord|sud|est|ouest/i.test(v) ? `✓ Sera convertie en ${r.lat}, ${r.lon}` : '✓ Position reconnue';
+  }
+  // Conversion automatique au collage et en quittant le champ
+  $('#fPos').addEventListener('input', posHint);
+  const convertPos = () => { const r = parsePos($('#fPos').value); if (!r.err && r.lat != null) { $('#fPos').value = `${r.lat}, ${r.lon}`; } posHint(); };
+  $('#fPos').addEventListener('paste', () => setTimeout(convertPos, 0));
+  $('#fPos').addEventListener('blur', convertPos);
   $('#fDel').addEventListener('click', () => {
     if (!sheet || sheet.mode !== 'edit') return;
     if (!delAsk) { delAsk = true; $('#fDel').classList.add('ask'); $('#fDelTxt').textContent = 'Confirmer'; return; }
@@ -1556,16 +1577,15 @@ onAuthStateChanged(auth, user => {
     e.preventDefault(); if (!sheet) return;
     const msg = $('#fMsg');
     const code = $('#fCode').value.trim().toUpperCase(), name = $('#fNom').value.trim();
-    const coche = $('#fCoche').checked;
     if (!code || !name) { msg.textContent = 'Le code OACI et le nom sont obligatoires.'; return; }
     if (!/^[A-Z0-9-]{2,10}$/.test(code)) { msg.textContent = 'Code OACI : lettres, chiffres ou tirets uniquement.'; return; }
-    const pos = parsePos($('#fPos').value.trim()); if (pos.err) { msg.textContent = pos.err; $('#fGps').open = true; return; }
+    const pos = $('#fGps').hidden ? { lat: null, lon: null } : parsePos($('#fPos').value); if (pos.err) { msg.textContent = pos.err; return; }
     if (sheet.mode === 'add') {
       const iso = $('#fPays').value, p = byIso.get(iso);
       if (rowsOf(p).some(r => r.code === code)) { msg.textContent = `Le code ${code} existe déjà pour ${p.n}.`; return; }
       const s = st(iso), k = 'u-' + code;
       s.added.push({ k, code, name, iata: '', mil: 0, lat: pos.lat, lon: pos.lon });
-      if (coche) s.checked.add(k);
+      s.checked.add(k);   // un aéroport ajouté à la main est toujours dans la collection
       persist(iso); closeSheet();
       select(iso, { focus: k }); renderGlobal();
       toast(`${code} ajouté à ${p.n}.`);
@@ -1579,7 +1599,6 @@ onAuthStateChanged(auth, user => {
         if (code === o.code && name === o.name) delete s.edits[k];
         else s.edits[k] = { code, name };
       }
-      if (coche) s.checked.add(k); else s.checked.delete(k);
       persist(iso); closeSheet(); flashKey = k; renderAll();
     }
   });
