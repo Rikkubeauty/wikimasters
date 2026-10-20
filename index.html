@@ -732,7 +732,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .brand{font:700 20px/1 var(--display);letter-spacing:.05em;text-transform:uppercase;margin:0;display:flex;align-items:center;gap:8px;min-width:0}
 .brand svg{width:22px;height:22px;color:var(--accent)}
-.brand span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.35}
 .brand b{color:var(--accent);font-weight:inherit}
 .bar .spacer{flex:1}
 .acct{position:relative}
@@ -838,18 +838,11 @@ select.field{padding-right:30px}
 .seg button{border:0;background:none;height:calc(var(--ctl-h) - 2px);padding:0 12px;cursor:pointer;font-size:14px;font-weight:600;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
 .seg button svg{width:17px;height:17px}
 .seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
-.msort{display:none;width:auto;flex:1 1 auto}
-.tools.mapmode .msort{visibility:hidden}
 
 /* ---- Tableau ---- */
 .table-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:14.5px}
-thead th{position:sticky;top:0;background:var(--card);z-index:1;text-align:left;font:700 12px var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);padding:0}
-thead th button{all:unset;display:flex;gap:6px;align-items:center;padding:9px 12px;cursor:pointer;width:100%;box-sizing:border-box}
-thead th button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
-thead th[aria-sort] button::after{content:"↕";opacity:.35}
-thead th[aria-sort="ascending"] button::after{content:"↑";opacity:1;color:var(--accent)}
-thead th[aria-sort="descending"] button::after{content:"↓";opacity:1;color:var(--accent)}
+thead th{position:sticky;top:0;background:var(--card);z-index:1;text-align:left;font:700 12px var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);padding:9px 12px}
 tbody td{padding:7px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
 tbody tr{transition:background-color .15s}
 tbody tr.on{background:var(--ok-soft)}
@@ -861,9 +854,6 @@ td.code .loc{color:var(--muted);font-weight:500}
 td.nm{font-weight:500}
 td.ck{width:60px;text-align:center}
 td.act{width:1%;text-align:right;white-space:nowrap}
-.tag{font:700 10.5px/1 var(--display);letter-spacing:.09em;text-transform:uppercase;padding:3px 6px;border-radius:4px;background:var(--track);color:var(--muted);white-space:nowrap}
-.tag.mil{background:var(--warn-bg);color:var(--warn)}
-.nm .tag{display:none;margin-left:7px;vertical-align:1px}
 .ico{border:0;background:none;color:var(--muted);border-radius:8px;width:34px;height:34px;cursor:pointer;display:inline-grid;place-items:center;opacity:.65}
 .ico svg{width:16px;height:16px}
 .ico:hover,.ico:focus-visible{background:var(--field);color:var(--accent);opacity:1}
@@ -908,11 +898,7 @@ td.act{width:1%;text-align:right;white-space:nowrap}
 .sheet-body{padding:6px 16px 4px;display:grid;gap:12px;overflow:auto;overscroll-behavior:contain}
 .fld{display:grid;gap:5px;min-width:0}
 .fld>span{font:700 11.5px/1 var(--display);letter-spacing:.11em;text-transform:uppercase;color:var(--muted)}
-.row2{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,10fr);gap:10px}
 .code-in{text-transform:uppercase;font-family:var(--mono);font-weight:600;letter-spacing:.03em}
-.seg2{display:flex;border:1px solid var(--line);border-radius:9px;background:var(--field);padding:3px;gap:3px;height:var(--ctl-h)}
-.seg2 button{flex:1;border:0;border-radius:6px;background:none;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer}
-.seg2 button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 0 0 1px var(--line)}
 .switch-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--field);cursor:pointer}
 .switch-row b{display:block;font-weight:600}
 .switch-row small{color:var(--muted);font-size:12.5px}
@@ -958,7 +944,6 @@ details.gps .field{margin-top:8px}
   .sum-pct{font-size:28px}
   .c-head{padding:12px 14px 10px;gap:8px}
   .tools{padding:8px 14px}
-  .msort{display:block}
   #addBtn{display:none}
   .fab{display:grid}
   #map{height:calc(100dvh - 250px);min-height:300px}
@@ -970,8 +955,6 @@ details.gps .field{margin-top:8px}
   tbody td{padding:0;border:0!important;min-width:0}
   td.code{font-size:13px}
   td.nm{font-size:15px;line-height:1.3;overflow-wrap:anywhere}
-  .nm .tag.mil{display:inline-block}
-  td.use{display:none}
   td.ck{width:40px;height:40px;display:grid;place-items:center}
   td.act{width:auto}
   .ico{width:32px;height:40px}
@@ -1047,7 +1030,7 @@ details.gps .field{margin-top:8px}
     </section>
   </div>
 
-  <p class="foot">Source : OurAirports (domaine public), données du 18/10/2026, hors héliports, ballons et terrains fermés. La mention « Militaire » est estimée d'après le nom du terrain. Fond de carte © contributeurs OpenStreetMap. Connecté avec Google, tout est enregistré en ligne et synchronisé sur vos appareils. <span class="num" id="buildTag">Version 2026.10.20-1653</span></p>
+  <p class="foot">Source : OurAirports (domaine public), données du 18/10/2026, hors héliports, ballons et terrains fermés. Fond de carte © contributeurs OpenStreetMap. Connecté avec Google, tout est enregistré en ligne et synchronisé sur vos appareils. <span class="num" id="buildTag">Version 2026.10.20-1704</span></p>
 </div>
 
 <div class="toast" id="toast" role="status" hidden></div>
@@ -1063,15 +1046,7 @@ details.gps .field{margin-top:8px}
     </div>
     <div class="sheet-body">
       <label class="fld" id="fPaysWrap"><span>Pays</span><select class="field" id="fPays"></select></label>
-      <div class="row2">
-        <label class="fld"><span>Code OACI</span><input class="field code-in" id="fCode" maxlength="10" placeholder="LFQT" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>
-        <div class="fld"><span>Usage</span>
-          <div class="seg2" role="group" aria-label="Usage">
-            <button type="button" data-usage="0" aria-pressed="true">Civil</button>
-            <button type="button" data-usage="1" aria-pressed="false">Militaire</button>
-          </div>
-        </div>
-      </div>
+      <label class="fld"><span>Code OACI</span><input class="field code-in" id="fCode" maxlength="10" placeholder="LFQT" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>
       <label class="fld"><span>Nom</span><input class="field" id="fNom" maxlength="120" placeholder="Merville-Calonne" autocomplete="off"></label>
       <label class="switch-row" for="fCoche"><span><b>Dans ma collection</b><small id="fCocheHint">Coché par défaut</small></span><input type="checkbox" class="switch" id="fCoche" checked></label>
       <details class="gps" id="fGps"><summary>Position GPS (facultatif)</summary><input class="field" id="fPos" placeholder="50.6175, 2.6422" autocomplete="off" inputmode="decimal"></details>
@@ -1104,14 +1079,6 @@ details.gps .field{margin-top:8px}
       <button type="button" data-view="list" aria-pressed="true" title="Liste"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Liste</button>
       <button type="button" data-view="map" aria-pressed="false" title="Carte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z"/><path d="M9 4v14M15 6v14"/></svg>Carte</button>
     </div>
-    <label class="sr" for="mSort">Trier</label>
-    <select class="field msort" id="mSort">
-      <option value="code:1">Tri : code OACI</option>
-      <option value="name:1">Tri : nom</option>
-      <option value="on:1">Tri : cochés d'abord</option>
-      <option value="on:-1">Tri : à cocher d'abord</option>
-      <option value="mil:-1">Tri : militaires d'abord</option>
-    </select>
     <span class="spacer"></span>
     <button type="button" class="btn primary" id="addBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Ajouter</button>
   </div>
@@ -1119,10 +1086,9 @@ details.gps .field{margin-top:8px}
     <div class="table-wrap">
       <table>
         <thead><tr>
-          <th aria-sort="ascending" data-k="code"><button type="button">Code OACI</button></th>
-          <th aria-sort="none" data-k="name"><button type="button">Aéroport / aérodrome</button></th>
-          <th aria-sort="none" data-k="on" style="text-align:center"><button type="button">Coché</button></th>
-          <th aria-sort="none" data-k="mil"><button type="button">Usage</button></th>
+          <th scope="col">Code OACI</th>
+          <th scope="col">Aéroport / aérodrome</th>
+          <th scope="col" style="text-align:center">Coché</th>
           <th class="act"><span class="sr">Modifier</span></th>
         </tr></thead>
         <tbody id="rows"></tbody>
@@ -1223,7 +1189,7 @@ onAuthStateChanged(auth, user => {
 <script>
 (() => {
   const PAGE = 300;
-  const BUILD = '2026.10.20-1653';
+  const BUILD = '2026.10.20-1704';
   const $ = (s, r = document) => r.querySelector(s);
   const fmt = n => n.toLocaleString('fr-FR');
   const pctTxt = (a, b) => (b ? (a / b * 100) : 0).toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -1238,7 +1204,7 @@ onAuthStateChanged(auth, user => {
   const byIso = new Map();
   const state = new Map();       // iso -> {checked:Set, added:[], edits:{}}
   let current = null;
-  let view = { sort: 'code', dir: 1, shown: PAGE, mode: 'list' };
+  let view = { shown: PAGE, mode: 'list' };
   let flashKey = null;
   let db = null, store = 'none';
   const dirty = new Set(), writing = new Set();
@@ -1252,7 +1218,7 @@ onAuthStateChanged(auth, user => {
     const base = p.a.map(r => {
       const o = { k: r[0], code: r[1] || r[0], name: r[2], iata: r[3], mil: r[4], lat: r[5], lon: r[6], user: false };
       const e = s.edits[r[0]];
-      return e ? { ...o, code: e.code ?? o.code, name: e.name ?? o.name, mil: e.mil ?? o.mil, orig: o } : o;
+      return e ? { ...o, code: e.code ?? o.code, name: e.name ?? o.name, orig: o } : o;
     });
     return base.concat(s.added.map(a => ({ k: a.k, code: a.code, name: a.name, iata: a.iata || '', mil: a.mil ? 1 : 0, lat: a.lat ?? null, lon: a.lon ?? null, user: true })));
   };
@@ -1377,10 +1343,6 @@ onAuthStateChanged(auth, user => {
 
     $('#mSelect').addEventListener('change', e => select(e.target.value));
     sec.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => setMode(b.dataset.view)));
-    sec.querySelectorAll('thead th[data-k]').forEach(th => th.querySelector('button').addEventListener('click', () => {
-      const k = th.dataset.k; setSort(k, view.sort === k ? -view.dir : 1);
-    }));
-    $('#mSort').addEventListener('change', e => { const [k, d] = e.target.value.split(':'); setSort(k, Number(d)); });
     $('#rows').addEventListener('change', e => {
       const cb = e.target.closest('.cb'); if (!cb || !current) return;
       toggle(current.c, cb.dataset.k, cb.checked);
@@ -1393,20 +1355,11 @@ onAuthStateChanged(auth, user => {
     $('#addBtn').addEventListener('click', () => openSheet({ mode: 'add' }));
   }
 
-  function setSort(k, dir) {
-    view.sort = k; view.dir = dir; view.shown = PAGE;
-    $('#country').querySelectorAll('thead th[data-k]').forEach(x => x.setAttribute('aria-sort', x.dataset.k === k ? (dir === 1 ? 'ascending' : 'descending') : 'none'));
-    const opt = [...$('#mSort').options].find(o => o.value === `${k}:${dir}`);
-    if (opt) $('#mSort').value = opt.value;
-    renderRows();
-  }
-
   function setMode(mode) {
     view.mode = mode;
     $('#country').querySelectorAll('[data-view]').forEach(x => x.setAttribute('aria-pressed', x.dataset.view === mode));
     $('#listView').hidden = mode !== 'list';
     $('#mapView').hidden = mode !== 'map';
-    $('#country .tools').classList.toggle('mapmode', mode === 'map');
     $('#fab').classList.toggle('off', mode === 'map' || store === 'readonly');
     try { localStorage.setItem(LS + '-vue', mode); } catch (e) {}
     if (mode === 'map') renderMap(true);
@@ -1426,17 +1379,10 @@ onAuthStateChanged(auth, user => {
     $('#exportCountry').textContent = `Tous les aéroports de ${p.n}`;
   }
 
-  function cmp(a, b) {
-    const k = view.sort, s = st(current.c);
-    let r = 0;
-    if (k === 'code') {
-      const ia = isIcao(a.code), ib = isIcao(b.code);
-      r = ia !== ib ? (ia ? -1 : 1) : (a.code < b.code ? -1 : a.code > b.code ? 1 : 0);
-    } else if (k === 'name') r = a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' });
-    else if (k === 'mil') r = a.mil - b.mil;
-    else if (k === 'on') r = (s.checked.has(b.k) ? 1 : 0) - (s.checked.has(a.k) ? 1 : 0);
-    if (r === 0 && k !== 'code') r = a.code < b.code ? -1 : a.code > b.code ? 1 : 0;
-    return r * view.dir;
+  function cmp(a, b) {   // ordre alphabétique du code OACI ; identifiants locaux en fin de liste
+    const ia = isIcao(a.code), ib = isIcao(b.code);
+    if (ia !== ib) return ia ? -1 : 1;
+    return a.code < b.code ? -1 : a.code > b.code ? 1 : 0;
   }
   const sortedRows = () => rowsOf(current).sort(cmp);
 
@@ -1448,12 +1394,10 @@ onAuthStateChanged(auth, user => {
     $('#rows').innerHTML = vis.map(r => {
       const on = s.checked.has(r.k);
       const loc = !isIcao(r.code);
-      const tag = `<span class="tag${r.mil ? ' mil' : ''}">${r.mil ? 'Militaire' : 'Civil'}</span>`;
       return `<tr class="${on ? 'on' : ''}${r.k === flashKey ? ' flash' : ''}" data-row="${esc(r.k)}">
         <td class="code"><span${loc ? ' class="loc"' : ''}>${esc(r.code)}</span></td>
-        <td class="nm">${esc(r.name)}${r.mil ? tag : ''}</td>
+        <td class="nm">${esc(r.name)}</td>
         <td class="ck"><input type="checkbox" class="cb" data-k="${esc(r.k)}" ${on ? 'checked' : ''} ${ro ? 'disabled' : ''} aria-label="Dans ma collection : ${esc(r.name)}"></td>
-        <td class="use">${tag}</td>
         <td class="act">${ro ? '' : `<button type="button" class="ico" data-edit="${esc(r.k)}" title="Modifier" aria-label="Modifier ${esc(r.name)}">${EDIT_ICON}</button>`}</td></tr>`;
     }).join('');
     const more = $('#more');
@@ -1553,8 +1497,6 @@ onAuthStateChanged(auth, user => {
   // ---------- Feuille Ajouter / Modifier ----------
   let sheet = null;   // {mode:'add'} | {mode:'edit', iso, k}
   let delAsk = false;
-  const usageVal = () => $('#sheet [data-usage][aria-pressed="true"]').dataset.usage === '1' ? 1 : 0;
-  const setUsage = v => $('#sheet').querySelectorAll('[data-usage]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.usage === String(v))));
   function openSheet(opts) {
     sheet = opts; delAsk = false;
     $('#sheetForm').classList.toggle('editing', opts.mode === 'edit');
@@ -1564,7 +1506,7 @@ onAuthStateChanged(auth, user => {
       $('#sheetTitle').textContent = 'Ajouter un aéroport';
       $('#fPaysWrap').hidden = false; $('#fPays').value = current.c;
       $('#fCode').value = ''; $('#fNom').value = ''; $('#fPos').value = '';
-      setUsage(0); $('#fCoche').checked = true; $('#fCocheHint').textContent = 'Coché par défaut';
+      $('#fCoche').checked = true; $('#fCocheHint').textContent = 'Coché par défaut';
       $('#fGps').hidden = false; $('#fGps').open = false;
       $('#fDel').hidden = true; $('#fReset').hidden = true;
       $('#fSubmit').textContent = 'Ajouter';
@@ -1573,7 +1515,7 @@ onAuthStateChanged(auth, user => {
       $('#sheetTitle').innerHTML = `Modifier <span>${esc(r.code)}</span>`;
       $('#fPaysWrap').hidden = true;
       $('#fCode').value = r.code; $('#fNom').value = r.name;
-      setUsage(r.mil); $('#fCoche').checked = st(p.c).checked.has(r.k); $('#fCocheHint').textContent = p.n;
+      $('#fCoche').checked = st(p.c).checked.has(r.k); $('#fCocheHint').textContent = p.n;
       $('#fGps').hidden = !r.user; $('#fGps').open = false;
       $('#fPos').value = r.user && r.lat != null ? `${r.lat}, ${r.lon}` : '';
       $('#fDel').hidden = !r.user; $('#fReset').hidden = !r.orig;
@@ -1585,8 +1527,7 @@ onAuthStateChanged(auth, user => {
   }
   function closeSheet() { $('#sheet').hidden = true; sheet = null; document.documentElement.style.overflow = ''; }
   $('#sheet').addEventListener('click', e => {
-    if (e.target.closest('[data-close]')) { closeSheet(); return; }
-    const u = e.target.closest('[data-usage]'); if (u) setUsage(u.dataset.usage);
+    if (e.target.closest('[data-close]')) closeSheet();
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && sheet) closeSheet(); });
   $('#fab').addEventListener('click', () => openSheet({ mode: 'add' }));
@@ -1615,7 +1556,7 @@ onAuthStateChanged(auth, user => {
     e.preventDefault(); if (!sheet) return;
     const msg = $('#fMsg');
     const code = $('#fCode').value.trim().toUpperCase(), name = $('#fNom').value.trim();
-    const mil = usageVal(), coche = $('#fCoche').checked;
+    const coche = $('#fCoche').checked;
     if (!code || !name) { msg.textContent = 'Le code OACI et le nom sont obligatoires.'; return; }
     if (!/^[A-Z0-9-]{2,10}$/.test(code)) { msg.textContent = 'Code OACI : lettres, chiffres ou tirets uniquement.'; return; }
     const pos = parsePos($('#fPos').value.trim()); if (pos.err) { msg.textContent = pos.err; $('#fGps').open = true; return; }
@@ -1623,7 +1564,7 @@ onAuthStateChanged(auth, user => {
       const iso = $('#fPays').value, p = byIso.get(iso);
       if (rowsOf(p).some(r => r.code === code)) { msg.textContent = `Le code ${code} existe déjà pour ${p.n}.`; return; }
       const s = st(iso), k = 'u-' + code;
-      s.added.push({ k, code, name, iata: '', mil, lat: pos.lat, lon: pos.lon });
+      s.added.push({ k, code, name, iata: '', mil: 0, lat: pos.lat, lon: pos.lon });
       if (coche) s.checked.add(k);
       persist(iso); closeSheet();
       select(iso, { focus: k }); renderGlobal();
@@ -1632,11 +1573,11 @@ onAuthStateChanged(auth, user => {
       const { iso, k } = sheet, p = byIso.get(iso), s = st(iso);
       const r = rowsOf(p).find(x => x.k === k); if (!r) { closeSheet(); return; }
       if (rowsOf(p).some(x => x.k !== k && x.code === code)) { msg.textContent = `Le code ${code} existe déjà pour ${p.n}.`; return; }
-      if (r.user) Object.assign(s.added.find(x => x.k === k), { code, name, mil, lat: pos.lat, lon: pos.lon });
+      if (r.user) Object.assign(s.added.find(x => x.k === k), { code, name, lat: pos.lat, lon: pos.lon });
       else {
         const o = r.orig || r;
-        if (code === o.code && name === o.name && mil === o.mil) delete s.edits[k];
-        else s.edits[k] = { code, name, mil };
+        if (code === o.code && name === o.name) delete s.edits[k];
+        else s.edits[k] = { code, name };
       }
       if (coche) s.checked.add(k); else s.checked.delete(k);
       persist(iso); closeSheet(); flashKey = k; renderAll();
@@ -1723,7 +1664,7 @@ onAuthStateChanged(auth, user => {
   });
   async function exportCsv(kind) {
     const q = v => { v = v == null ? '' : String(v); return /[";\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
-    const lines = [['Pays', 'Code pays', 'Code OACI', 'Nom', 'Usage', 'Dans ma collection', 'Latitude', 'Longitude'].join(';')];
+    const lines = [['Pays', 'Code pays', 'Code OACI', 'Nom', 'Dans ma collection', 'Latitude', 'Longitude'].join(';')];
     const list = kind === 'country' && current ? [current] : PAYS;
     let n = 0;
     for (const p of list) {
@@ -1731,7 +1672,7 @@ onAuthStateChanged(auth, user => {
       for (const r of rowsOf(p).sort((a, b) => (isIcao(b.code) - isIcao(a.code)) || (a.code < b.code ? -1 : 1))) {
         const on = s.checked.has(r.k);
         if (kind === 'mine' && !on) continue;
-        lines.push([p.n, p.c, r.code, r.name, r.mil ? 'Militaire' : 'Civil', on ? 'oui' : 'non',
+        lines.push([p.n, p.c, r.code, r.name, on ? 'oui' : 'non',
           r.lat == null ? '' : String(r.lat).replace('.', ','), r.lon == null ? '' : String(r.lon).replace('.', ',')].map(q).join(';'));
         n++;
       }
