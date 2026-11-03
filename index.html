@@ -871,20 +871,23 @@ td.act{width:1%;text-align:right;white-space:nowrap}
 /* ---- Carte ---- */
 .legend{display:flex;flex-wrap:wrap;gap:4px 16px;padding:8px 16px;font-size:12.5px;color:var(--muted);border-bottom:1px solid var(--line)}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
-.legend .lg-on{background:var(--ok)} .legend .lg-off{background:var(--accent)}
+.legend .lg-on{background:#3ee07f;box-shadow:0 0 0 1.5px #05090d} .legend .lg-off{background:#ffb21e;box-shadow:0 0 0 1.5px #05090d}
 .mapbox{position:relative}
-#map{height:min(68vh,620px);min-height:320px;background:var(--track);border-radius:0 0 var(--r) var(--r);z-index:0}
+#map{height:min(68vh,620px);min-height:320px;background:#0e1419;border-radius:0 0 var(--r) var(--r);z-index:0}
 .map-note{position:absolute;left:10px;right:10px;bottom:10px;z-index:500;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:12.5px;color:var(--muted)}
-.leaflet-container{font:14px/1.4 var(--body);background:var(--track)}
+.leaflet-container{font:14px/1.4 var(--body);background:#0e1419}
+.dark-tiles{filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(.88) saturate(.55)}
 .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--card);color:var(--ink);box-shadow:var(--pop)}
 .leaflet-popup-content{margin:11px 13px;min-width:180px}
 .mpop{display:grid;gap:5px}
 .mpop .pc{font:600 14px var(--mono)}
 .mpop .pn{font-weight:600}
 .mpop label{display:flex;align-items:center;gap:9px;font-weight:600;cursor:pointer;padding-top:3px}
-.leaflet-control-attribution{background:var(--card)!important;color:var(--muted)}
-.leaflet-control-attribution a{color:var(--muted)}
-.leaflet-bar a{background:var(--card);color:var(--ink);border-bottom-color:var(--line)}
+.leaflet-control-attribution{background:rgba(14,20,25,.8)!important;color:#8a98a5;font-size:10px!important;line-height:1.3}
+.leaflet-control-attribution a{color:#a9b6c2}
+.leaflet-bar{border:1px solid #26333f!important;box-shadow:none!important}
+.leaflet-bar a{background:#151f28;color:#e4eaef;border-bottom-color:#26333f}
+.leaflet-bar a:hover{background:#1c2833;color:#fff}
 
 /* ---- Feuille « Ajouter / Modifier » ---- */
 .sheet-wrap{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px}
@@ -914,6 +917,12 @@ td.act{width:1%;text-align:right;white-space:nowrap}
   right:max(16px,calc(env(safe-area-inset-right,0px) + 12px));bottom:calc(16px + env(safe-area-inset-bottom,0px))}
 .fab svg{width:24px;height:24px}
 .fab.off{display:none!important}
+.totop{position:fixed;z-index:39;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);box-shadow:var(--pop);cursor:pointer;display:grid;place-items:center;
+  right:max(16px,calc(env(safe-area-inset-right,0px) + 12px));bottom:calc(16px + env(safe-area-inset-bottom,0px));
+  opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .2s,transform .2s}
+.totop svg{width:20px;height:20px}
+.totop.show{opacity:1;transform:none;pointer-events:auto}
+.totop:hover{border-color:var(--muted)}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(86px + env(safe-area-inset-bottom,0px));z-index:70;background:var(--ink);color:var(--card);padding:9px 14px;border-radius:9px;font-size:14px;box-shadow:var(--pop);max-width:calc(100vw - 32px)}
 .foot{color:var(--muted);font-size:12px;max-width:80ch;margin:0}
 
@@ -937,6 +946,8 @@ td.act{width:1%;text-align:right;white-space:nowrap}
   .tools{padding:8px 14px}
   #addBtn{display:none}
   .fab{display:grid}
+  .totop{right:max(22px,calc(env(safe-area-inset-right,0px) + 18px));bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+  .totop.nofab{right:max(16px,calc(env(safe-area-inset-right,0px) + 12px));bottom:calc(16px + env(safe-area-inset-bottom,0px))}
   #map{height:calc(100dvh - 250px);min-height:300px}
 
   thead{display:none}
@@ -1021,10 +1032,11 @@ td.act{width:1%;text-align:right;white-space:nowrap}
     </section>
   </div>
 
-  <p class="foot">Source : OurAirports (domaine public), données du 18/10/2026, hors héliports, ballons et terrains fermés. Fond de carte © OpenStreetMap France et contributeurs OpenStreetMap. Connecté avec Google, tout est enregistré en ligne et synchronisé sur vos appareils. <span class="num" id="buildTag">Version 2026.10.20-1718</span></p>
+  <p class="foot">Source : OurAirports (domaine public), données du 18/10/2026, hors héliports, ballons et terrains fermés. Fond de carte © OpenStreetMap France et contributeurs OpenStreetMap. Connecté avec Google, tout est enregistré en ligne et synchronisé sur vos appareils. <span class="num" id="buildTag">Version 2026.11.03-0713</span></p>
 </div>
 
 <div class="toast" id="toast" role="status" hidden></div>
+<button type="button" class="totop" id="toTop" aria-label="Remonter en haut de la page" title="Haut de page" tabindex="-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></button>
 <button type="button" class="fab" id="fab" aria-label="Ajouter un aéroport" title="Ajouter un aéroport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
 
 <div class="sheet-wrap" id="sheet" hidden>
@@ -1179,7 +1191,7 @@ onAuthStateChanged(auth, user => {
 <script>
 (() => {
   const PAGE = 300;
-  const BUILD = '2026.10.20-1718';
+  const BUILD = '2026.11.03-0713';
   const $ = (s, r = document) => r.querySelector(s);
   const fmt = n => n.toLocaleString('fr-FR');
   const pctTxt = (a, b) => (b ? (a / b * 100) : 0).toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -1425,7 +1437,7 @@ onAuthStateChanged(auth, user => {
   }
 
   // ---------- Carte ----------
-  let map = null, layer = null, markers = new Map(), leafletLoading = null, lastMapIso = null;
+  let map = null, renderer = null, layer = null, markers = new Map(), leafletLoading = null, lastMapIso = null;
   function loadLeaflet() {
     if (window.L) return Promise.resolve();
     if (!leafletLoading) leafletLoading = new Promise((res, rej) => {
@@ -1435,9 +1447,16 @@ onAuthStateChanged(auth, user => {
     });
     return leafletLoading;
   }
+  // Points de la carte : couleurs vives sur fond sombre, taille selon le zoom
+  const PIN_ON = '#3ee07f', PIN_OFF = '#ffb21e', PIN_EDGE = '#05090d';
+  function pinRadius(on) {
+    const z = map ? map.getZoom() : 5;
+    const r = z <= 3 ? 1.8 : z === 4 ? 2.2 : z === 5 ? 2.7 : z === 6 ? 3.3 : z === 7 ? 4 : z === 8 ? 4.8 : z === 9 ? 5.5 : 6.5;
+    return on ? r + 1.2 : r;
+  }
   function styleFor(on) {
-    return on ? { radius: 6, color: css('--card'), weight: 1.5, fillColor: css('--ok'), fillOpacity: 1 }
-              : { radius: 5, color: css('--card'), weight: 1.5, fillColor: css('--accent'), fillOpacity: .8 };
+    const r = pinRadius(on);
+    return { radius: r, color: PIN_EDGE, weight: r < 3 ? 0.6 : 1, opacity: .9, fillColor: on ? PIN_ON : PIN_OFF, fillOpacity: 1 };
   }
   function popupHtml(r, on) {
     return `<div class="mpop"><span class="pc">${esc(r.code)}</span><span class="pn">${esc(r.name)}</span>
@@ -1448,19 +1467,22 @@ onAuthStateChanged(auth, user => {
     try { await loadLeaflet(); } catch (e) { $('#mapNote').hidden = false; $('#mapNote').textContent = 'La carte n’a pas pu se charger. Vérifiez la connexion internet.'; return; }
     if (!map) {
       map = L.map('map', { preferCanvas: true, worldCopyJump: true });
-      // Fond OpenStreetMap France : noms de lieux en français en priorité (name:fr), partout dans le monde.
-      // S'il ne répond pas, bascule sur CARTO Voyager (noms en alphabet latin).
-      let tiles = L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', { subdomains: 'abc', maxZoom: 20, attribution: '© OpenStreetMap France · © contributeurs OpenStreetMap' }).addTo(map);
+      map.attributionControl.setPrefix(false);
+      renderer = L.canvas({ padding: .3, tolerance: 8 });   // zone de toucher élargie autour des petits points
+      // Fond OpenStreetMap France : noms de lieux en français en priorité (name:fr), passé en sombre par un filtre.
+      // S'il ne répond pas, bascule sur CARTO Dark Matter (sombre, noms en alphabet latin).
+      let tiles = L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', { subdomains: 'abc', maxZoom: 20, className: 'dark-tiles', attribution: '© OpenStreetMap France · © contributeurs OpenStreetMap' }).addTo(map);
       let errs = 0, ok = 0, fallback = false;
       tiles.on('tileload', () => ok++);
       tiles.on('tileerror', () => {
         if (++errs < 6 || ok > errs || fallback) return;
         fallback = true; map.removeLayer(tiles);
-        tiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 20, attribution: '© OpenStreetMap · © CARTO' }).addTo(map);
+        tiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 20, attribution: '© OpenStreetMap · © CARTO' }).addTo(map);
         let e2 = 0;
         tiles.on('tileerror', () => { if (++e2 === 4) { $('#mapNote').hidden = false; $('#mapNote').textContent = 'Fond de carte indisponible : les points restent cliquables.'; } });
       });
       layer = L.layerGroup().addTo(map);
+      map.on('zoomend', () => { const s = st(current.c); markers.forEach(({ m, r }) => m.setStyle(styleFor(s.checked.has(r.k)))); });
       $('#map').addEventListener('change', e => {
         const cb = e.target.closest('[data-mk]'); if (!cb || !current) return;
         toggle(current.c, cb.dataset.mk, cb.checked);
@@ -1472,7 +1494,11 @@ onAuthStateChanged(auth, user => {
     const s = st(current.c);
     const all = rowsOf(current), list = all.filter(r => r.lat != null && r.lon != null);
     layer.clearLayers(); markers.clear();
-    const renderer = L.canvas({ padding: .3 });
+    if (fit || lastMapIso !== current.c) {
+      lastMapIso = current.c;
+      if (list.length) map.fitBounds(L.latLngBounds(list.map(r => [r.lat, r.lon])).pad(0.08), { maxZoom: 10, animate: false });
+      else map.setView([20, 0], 2, { animate: false });
+    }
     list.sort((a, b) => (s.checked.has(a.k) ? 1 : 0) - (s.checked.has(b.k) ? 1 : 0));
     for (const r of list) {
       const m = L.circleMarker([r.lat, r.lon], { ...styleFor(s.checked.has(r.k)), renderer });
@@ -1481,11 +1507,6 @@ onAuthStateChanged(auth, user => {
     }
     const missing = all.length - list.length;
     $('#mapCount').textContent = `${fmt(list.length)} sur la carte` + (missing ? ` · ${missing} sans position` : '');
-    if (fit || lastMapIso !== current.c) {
-      lastMapIso = current.c;
-      if (list.length) map.fitBounds(L.latLngBounds(list.map(r => [r.lat, r.lon])).pad(0.08), { maxZoom: 10 });
-      else map.setView([20, 0], 2);
-    }
   }
   function updateMarker(k) {
     const x = markers.get(k); if (!x) return;
@@ -1738,6 +1759,18 @@ onAuthStateChanged(auth, user => {
     } catch (e) {}
   }
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkUpdate(); });
+
+  // ---------- Bouton « haut de page » ----------
+  const toTop = $('#toTop');
+  let ticking = false;
+  const updTop = () => {
+    const show = window.scrollY > 600 && !sheet;
+    toTop.classList.toggle('show', show); toTop.tabIndex = show ? 0 : -1;
+    toTop.classList.toggle('nofab', $('#fab').classList.contains('off'));
+    ticking = false;
+  };
+  window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(updTop); } }, { passive: true });
+  toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }));
 
   // ---------- Démarrage ----------
   $('#cSearch').addEventListener('input', renderIndex);
