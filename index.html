@@ -885,7 +885,9 @@ td.act{width:1%;text-align:right;white-space:nowrap}
 #map{height:min(68vh,620px);min-height:320px;background:#0e1419;border-radius:0 0 var(--r) var(--r);z-index:0}
 .map-note{position:absolute;left:10px;right:10px;bottom:10px;z-index:500;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:12.5px;color:var(--muted)}
 .leaflet-container{font:14px/1.4 var(--body);background:#0e1419}
-.dark-tiles{filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(.88) saturate(.55)}
+.bm-sombre{filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(.88) saturate(.55)}
+.bm-noir{filter:invert(1) hue-rotate(180deg) grayscale(1) brightness(.78) contrast(1.25)}
+.bm-gris{filter:grayscale(1) contrast(.95) brightness(1.03)}
 .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--card);color:var(--ink);box-shadow:var(--pop)}
 .leaflet-popup-content{margin:11px 13px;min-width:180px}
 .mpop{display:grid;gap:5px}
@@ -1041,7 +1043,7 @@ td.act{width:1%;text-align:right;white-space:nowrap}
     </section>
   </div>
 
-  <p class="foot">Source : OurAirports (domaine public), données du 18/10/2026, hors héliports, ballons et terrains fermés. Fond de carte © OpenStreetMap France et contributeurs OpenStreetMap. Connecté avec Google, tout est enregistré en ligne et synchronisé sur vos appareils. <span class="num" id="buildTag">Version 2026.11.03-1056</span></p>
+  <p class="foot">Source : OurAirports (domaine public), données du 18/10/2026, hors héliports, ballons et terrains fermés. Fond de carte © OpenStreetMap France et contributeurs OpenStreetMap. Connecté avec Google, tout est enregistré en ligne et synchronisé sur vos appareils. <span class="num" id="buildTag">Version 2026.11.03-1105</span></p>
 </div>
 
 <div class="toast" id="toast" role="status" hidden></div>
@@ -1119,7 +1121,7 @@ td.act{width:1%;text-align:right;white-space:nowrap}
   <div id="mapView" hidden>
     <div class="legend"><span><i class="lg-on"></i>Dans ma collection</span><span><i class="lg-off"></i>À trouver</span><span id="mapCount"></span>
       <label class="basepick"><span class="sr">Fond de carte</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2 10 5-10 5L2 7l10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg><select id="mapBase" aria-label="Fond de carte">
-        <option value="sombre">Sombre</option><option value="noir">Noir</option><option value="clair">Clair</option><option value="voyager">Clair épuré</option><option value="satellite">Satellite</option>
+        <option value="sombre">Sombre</option><option value="noir">Noir</option><option value="clair">Clair</option><option value="gris">Gris</option>
       </select></label></div>
     <div class="mapbox"><div id="map" role="region" aria-label="Carte des aérodromes du pays"></div><div class="map-note" id="mapNote" hidden></div></div>
   </div>
@@ -1212,7 +1214,7 @@ onAuthStateChanged(auth, user => {
 <script>
 (() => {
   const PAGE = 300;
-  const BUILD = '2026.11.03-1056';
+  const BUILD = '2026.11.03-1105';
   const $ = (s, r = document) => r.querySelector(s);
   const fmt = n => n.toLocaleString('fr-FR');
   const pctTxt = (a, b) => (b ? (a / b * 100) : 0).toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -1551,33 +1553,40 @@ onAuthStateChanged(auth, user => {
   }
 
   // ---------- Fonds de carte au choix ----------
+  // Tous les fonds viennent d'OpenStreetMap France (noms en français, sans clé d'API) ; seul le filtre d'affichage change.
+  // Si ce serveur ne répond pas, secours sur le serveur OpenStreetMap principal (même rendu, noms locaux).
   const OSMFR = 'https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', OSMFR_ATT = '© OpenStreetMap France · © contributeurs OpenStreetMap';
+  const OSM = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', OSM_ATT = '© contributeurs OpenStreetMap';
   const BASES = {
-    sombre:    { label: 'Sombre (noms en français)', url: OSMFR, o: { subdomains: 'abc', maxZoom: 20, className: 'dark-tiles', attribution: OSMFR_ATT }, bg: '#0e1419', fb: 'noir' },
-    noir:      { label: 'Noir', url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', o: { subdomains: 'abcd', maxZoom: 20, attribution: '© OpenStreetMap · © CARTO' }, bg: '#090909' },
-    clair:     { label: 'Clair (noms en français)', url: OSMFR, o: { subdomains: 'abc', maxZoom: 20, attribution: OSMFR_ATT }, bg: '#e8e4dc', fb: 'voyager' },
-    voyager:   { label: 'Clair épuré', url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', o: { subdomains: 'abcd', maxZoom: 20, attribution: '© OpenStreetMap · © CARTO' }, bg: '#f2efe9' },
-    satellite: { label: 'Satellite', url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', o: { maxZoom: 19, attribution: 'Imagerie © Esri, Maxar, Earthstar Geographics' }, bg: '#0b0f12' }
+    sombre: { cls: 'bm-sombre', bg: '#0e1419' },
+    noir:   { cls: 'bm-noir',   bg: '#000000' },
+    clair:  { cls: '',          bg: '#e8e4dc' },
+    gris:   { cls: 'bm-gris',   bg: '#e6e6e6' }
   };
   let baseKey = 'sombre', tiles = null;
   try { const k = localStorage.getItem(LS + '-fond'); if (BASES[k]) baseKey = k; } catch (e) {}
-  function setBase(key, isFallback) {
+  function setBase(key) {
     if (!BASES[key]) key = 'sombre';
-    if (!isFallback) { baseKey = key; try { localStorage.setItem(LS + '-fond', key); } catch (e) {} }
-    const sel = $('#mapBase'); if (sel) sel.value = baseKey;
+    baseKey = key; try { localStorage.setItem(LS + '-fond', key); } catch (e) {}
+    const sel = $('#mapBase'); if (sel) sel.value = key;
     if (!map) return;
     const B = BASES[key];
-    if (tiles) map.removeLayer(tiles);
-    $('#mapNote').hidden = true;
     $('#map').style.background = B.bg;
-    tiles = L.tileLayer(B.url, B.o).addTo(map); tiles.bringToBack();
-    let errs = 0, ok = 0, done = false;
+    if (tiles) {   // même tuiles, on change seulement le filtre : instantané, rien à recharger
+      const c = tiles.getContainer(); if (c) c.className = 'leaflet-layer ' + (B.cls || '');
+      tiles.options.className = B.cls;
+      return;
+    }
+    const make = (url, att, sub) => L.tileLayer(url, { subdomains: sub || 'abc', maxZoom: 19, className: B.cls, attribution: att });
+    tiles = make(OSMFR, OSMFR_ATT).addTo(map); tiles.bringToBack();
+    let errs = 0, ok = 0, switched = false;
     tiles.on('tileload', () => ok++);
     tiles.on('tileerror', () => {
-      if (++errs < 6 || ok > errs || done) return;
-      done = true;
-      if (B.fb) setBase(B.fb, true);   // serveur indisponible : fond de secours équivalent
-      else { $('#mapNote').hidden = false; $('#mapNote').textContent = 'Ce fond de carte ne répond pas : choisissez-en un autre. Les points restent cliquables.'; }
+      if (++errs < 6 || ok > errs || switched) return;
+      switched = true; map.removeLayer(tiles);
+      tiles = L.tileLayer(OSM, { maxZoom: 19, className: BASES[baseKey].cls, attribution: OSM_ATT }).addTo(map); tiles.bringToBack();
+      let e2 = 0;
+      tiles.on('tileerror', () => { if (++e2 === 6) { $('#mapNote').hidden = false; $('#mapNote').textContent = 'Fond de carte indisponible pour le moment : les points restent cliquables.'; } });
     });
   }
 
