@@ -875,7 +875,10 @@ td.act{width:1%;text-align:right;white-space:nowrap}
 .loading{padding:50px 16px;text-align:center;color:var(--muted)}
 
 /* ---- Carte ---- */
-.legend{display:flex;flex-wrap:wrap;gap:4px 16px;padding:8px 16px;font-size:12.5px;color:var(--muted);border-bottom:1px solid var(--line)}
+.legend{display:flex;flex-wrap:wrap;align-items:center;gap:4px 16px;padding:8px 16px;font-size:12.5px;color:var(--muted);border-bottom:1px solid var(--line)}
+.basepick{margin-left:auto;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 4px 0 9px;border:1px solid var(--line);border-radius:8px;background:var(--field);color:var(--ink);cursor:pointer}
+.basepick svg{width:15px;height:15px;color:var(--muted)}
+.basepick select{border:0;background:none;font:600 13px var(--body);color:var(--ink);padding:0 2px;cursor:pointer;outline:none}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
 .legend .lg-on{background:#3ee07f;box-shadow:0 0 0 1.5px #05090d} .legend .lg-off{background:#ffb21e;box-shadow:0 0 0 1.5px #05090d}
 .mapbox{position:relative}
@@ -1038,7 +1041,7 @@ td.act{width:1%;text-align:right;white-space:nowrap}
     </section>
   </div>
 
-  <p class="foot">Source : OurAirports (domaine public), données du 18/10/2026, hors héliports, ballons et terrains fermés. Fond de carte © OpenStreetMap France et contributeurs OpenStreetMap. Connecté avec Google, tout est enregistré en ligne et synchronisé sur vos appareils. <span class="num" id="buildTag">Version 2026.11.03-1048</span></p>
+  <p class="foot">Source : OurAirports (domaine public), données du 18/10/2026, hors héliports, ballons et terrains fermés. Fond de carte © OpenStreetMap France et contributeurs OpenStreetMap. Connecté avec Google, tout est enregistré en ligne et synchronisé sur vos appareils. <span class="num" id="buildTag">Version 2026.11.03-1056</span></p>
 </div>
 
 <div class="toast" id="toast" role="status" hidden></div>
@@ -1114,7 +1117,10 @@ td.act{width:1%;text-align:right;white-space:nowrap}
     <div class="more" id="more"></div>
   </div>
   <div id="mapView" hidden>
-    <div class="legend"><span><i class="lg-on"></i>Dans ma collection</span><span><i class="lg-off"></i>À trouver</span><span id="mapCount"></span></div>
+    <div class="legend"><span><i class="lg-on"></i>Dans ma collection</span><span><i class="lg-off"></i>À trouver</span><span id="mapCount"></span>
+      <label class="basepick"><span class="sr">Fond de carte</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2 10 5-10 5L2 7l10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg><select id="mapBase" aria-label="Fond de carte">
+        <option value="sombre">Sombre</option><option value="noir">Noir</option><option value="clair">Clair</option><option value="voyager">Clair épuré</option><option value="satellite">Satellite</option>
+      </select></label></div>
     <div class="mapbox"><div id="map" role="region" aria-label="Carte des aérodromes du pays"></div><div class="map-note" id="mapNote" hidden></div></div>
   </div>
 </template>
@@ -1206,7 +1212,7 @@ onAuthStateChanged(auth, user => {
 <script>
 (() => {
   const PAGE = 300;
-  const BUILD = '2026.11.03-1048';
+  const BUILD = '2026.11.03-1056';
   const $ = (s, r = document) => r.querySelector(s);
   const fmt = n => n.toLocaleString('fr-FR');
   const pctTxt = (a, b) => (b ? (a / b * 100) : 0).toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -1384,6 +1390,8 @@ onAuthStateChanged(auth, user => {
 
     $('#mPick').addEventListener('click', openCountries);
     sec.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => setMode(b.dataset.view)));
+    $('#mapBase').value = baseKey;
+    $('#mapBase').addEventListener('change', e => setBase(e.target.value));
     $('#rows').addEventListener('change', e => {
       const cb = e.target.closest('.cb'); if (!cb || !current) return;
       toggle(current.c, cb.dataset.k, cb.checked);
@@ -1508,18 +1516,7 @@ onAuthStateChanged(auth, user => {
       map = L.map('map', { preferCanvas: true, worldCopyJump: true });
       map.attributionControl.setPrefix(false);
       renderer = L.canvas({ padding: .3, tolerance: 8 });   // zone de toucher élargie autour des petits points
-      // Fond OpenStreetMap France : noms de lieux en français en priorité (name:fr), passé en sombre par un filtre.
-      // S'il ne répond pas, bascule sur CARTO Dark Matter (sombre, noms en alphabet latin).
-      let tiles = L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', { subdomains: 'abc', maxZoom: 20, className: 'dark-tiles', attribution: '© OpenStreetMap France · © contributeurs OpenStreetMap' }).addTo(map);
-      let errs = 0, ok = 0, fallback = false;
-      tiles.on('tileload', () => ok++);
-      tiles.on('tileerror', () => {
-        if (++errs < 6 || ok > errs || fallback) return;
-        fallback = true; map.removeLayer(tiles);
-        tiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 20, attribution: '© OpenStreetMap · © CARTO' }).addTo(map);
-        let e2 = 0;
-        tiles.on('tileerror', () => { if (++e2 === 4) { $('#mapNote').hidden = false; $('#mapNote').textContent = 'Fond de carte indisponible : les points restent cliquables.'; } });
-      });
+      setBase(baseKey);
       layer = L.layerGroup().addTo(map);
       map.on('zoomend', () => { const s = st(current.c); markers.forEach(({ m, r }) => m.setStyle(styleFor(s.checked.has(r.k)))); });
       $('#map').addEventListener('change', e => {
@@ -1551,6 +1548,37 @@ onAuthStateChanged(auth, user => {
     const x = markers.get(k); if (!x) return;
     const on = st(current.c).checked.has(k);
     x.m.setStyle(styleFor(on)); if (on) x.m.bringToFront();
+  }
+
+  // ---------- Fonds de carte au choix ----------
+  const OSMFR = 'https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', OSMFR_ATT = '© OpenStreetMap France · © contributeurs OpenStreetMap';
+  const BASES = {
+    sombre:    { label: 'Sombre (noms en français)', url: OSMFR, o: { subdomains: 'abc', maxZoom: 20, className: 'dark-tiles', attribution: OSMFR_ATT }, bg: '#0e1419', fb: 'noir' },
+    noir:      { label: 'Noir', url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', o: { subdomains: 'abcd', maxZoom: 20, attribution: '© OpenStreetMap · © CARTO' }, bg: '#090909' },
+    clair:     { label: 'Clair (noms en français)', url: OSMFR, o: { subdomains: 'abc', maxZoom: 20, attribution: OSMFR_ATT }, bg: '#e8e4dc', fb: 'voyager' },
+    voyager:   { label: 'Clair épuré', url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', o: { subdomains: 'abcd', maxZoom: 20, attribution: '© OpenStreetMap · © CARTO' }, bg: '#f2efe9' },
+    satellite: { label: 'Satellite', url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', o: { maxZoom: 19, attribution: 'Imagerie © Esri, Maxar, Earthstar Geographics' }, bg: '#0b0f12' }
+  };
+  let baseKey = 'sombre', tiles = null;
+  try { const k = localStorage.getItem(LS + '-fond'); if (BASES[k]) baseKey = k; } catch (e) {}
+  function setBase(key, isFallback) {
+    if (!BASES[key]) key = 'sombre';
+    if (!isFallback) { baseKey = key; try { localStorage.setItem(LS + '-fond', key); } catch (e) {} }
+    const sel = $('#mapBase'); if (sel) sel.value = baseKey;
+    if (!map) return;
+    const B = BASES[key];
+    if (tiles) map.removeLayer(tiles);
+    $('#mapNote').hidden = true;
+    $('#map').style.background = B.bg;
+    tiles = L.tileLayer(B.url, B.o).addTo(map); tiles.bringToBack();
+    let errs = 0, ok = 0, done = false;
+    tiles.on('tileload', () => ok++);
+    tiles.on('tileerror', () => {
+      if (++errs < 6 || ok > errs || done) return;
+      done = true;
+      if (B.fb) setBase(B.fb, true);   // serveur indisponible : fond de secours équivalent
+      else { $('#mapNote').hidden = false; $('#mapNote').textContent = 'Ce fond de carte ne répond pas : choisissez-en un autre. Les points restent cliquables.'; }
+    });
   }
 
   // ---------- Feuille Ajouter / Modifier ----------
