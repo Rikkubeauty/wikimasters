@@ -2,7 +2,7 @@
    Page : réseau d'abord, sans cache HTTP (toujours la dernière version publiée), copie locale si hors ligne.
    Bibliothèques, polices et icônes : copie locale d'abord.
    Les données (coches, ajouts) ne passent pas ici : Firebase gère sa propre synchronisation hors ligne. */
-const VERSION = 'v2';
+const VERSION = 'v4';
 const SHELL = `carnet-shell-${VERSION}`;
 const ASSETS = `carnet-assets-${VERSION}`;
 const PRECACHE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
